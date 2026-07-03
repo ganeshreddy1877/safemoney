@@ -6,6 +6,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
 from app.database import SessionLocal, get_db
 from app.models import User, Challenge, PointLog, init_db
 from app.auth import get_password_hash, create_access_token, verify_password, log_audit
@@ -186,10 +189,10 @@ async def login(request: Request, db: Session = Depends(get_db)):
 # Serve SPA Frontend
 @app.get("/")
 def read_index():
-    return FileResponse("static/index.html")
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 # Mount Static Files (after general routes to prevent hijacking)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 if __name__ == "__main__":
     import uvicorn
